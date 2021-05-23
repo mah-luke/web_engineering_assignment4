@@ -1,0 +1,8 @@
+{
+  "env": {
+    "jest": true
+  },
+  "globals": {
+    "__SEED__": "readonly"
+  }
+}
