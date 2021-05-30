@@ -8,6 +8,7 @@
     <form class="framing-form museum-label" @submit.prevent>
       <print-size-picker v-model="config.printSize" :printSizes="printSizes" />
       <!-- TODO: add missing components -->
+      <width-slider :label="'FrameWidth'" v-model="config.frameWidth" :max="50" :min="20" />
 
       <fieldset>
         <legend>Price</legend>
@@ -32,10 +33,12 @@ import * as ArtmartService from "@/services/ArtmartService";
 import FramedArtwork from "@/components/FramedArtwork";
 import MuseumLabel from "@/components/MuseumLabel";
 import PrintSizePicker from "@/components/framing/PrintSizePicker";
+import WidthSlider from "@/components/framing/WidthSlider";
 
 export default {
   name: "Framing",
   components: {
+    WidthSlider,
     FramedArtwork,
     MuseumLabel,
     PrintSizePicker
