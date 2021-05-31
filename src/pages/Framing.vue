@@ -7,15 +7,17 @@
 
     <form class="framing-form museum-label" @submit.prevent>
       <print-size-picker v-model="config.printSize" :printSizes="printSizes" />
-      <!-- TODO: add missing components -->
-      <width-slider :label="'FrameWidth'" v-model="config.frameWidth" :max="50" :min="20" />
+      <width-slider :label="'Frame'" v-model="config.frameWidth" :max="50" :min="20" />
+      <FrameStylePicker v-model="config.frameStyle"/>
+      <width-slider :label="'Mat'" v-model="config.matWidth" :max="100" :min="0" />
+      <MatColorPicker v-model="config.matColor"/>
 
       <fieldset>
         <legend>Price</legend>
         <div class="framing-form-row">
           <label for="price">Price (excl. shipping)</label>
           <div>
-            <span class="price" id="price">€ 0</span>
+            <span class="price" id="price">€ {{ (price/100).toFixed(2) }}</span>
           </div>
         </div>
         <div class="framing-form-row">
@@ -34,10 +36,14 @@ import FramedArtwork from "@/components/FramedArtwork";
 import MuseumLabel from "@/components/MuseumLabel";
 import PrintSizePicker from "@/components/framing/PrintSizePicker";
 import WidthSlider from "@/components/framing/WidthSlider";
+import FrameStylePicker from "@/components/framing/FrameStylePicker";
+import MatColorPicker from "@/components/framing/MatColorPicker";
 
 export default {
   name: "Framing",
   components: {
+    MatColorPicker,
+    FrameStylePicker,
     WidthSlider,
     FramedArtwork,
     MuseumLabel,
@@ -127,6 +133,12 @@ export default {
     },
   },
   methods: {
+    addToCart() {
+      let cart = this.config;
+      cart.artworkId = this.artworkId;
+      this.$store.dispatch('addToCart', cart);
+      this.$router.push({path: "/cart"});
+    }
   }
 };
 </script>

@@ -1,5 +1,6 @@
 <template>
   <main>
+    <width-slider :max="50" :min="20" v-model="test" :label="'testlabel'" />
     <form role="search" class="search-form" @submit.prevent="pushQuery">
       <input
         type="search"
@@ -19,16 +20,19 @@
 <script>
 import * as ArtmartService from "@/services/ArtmartService";
 import GalleryItem from "@/components/GalleryItem";
+import WidthSlider from "@/components/framing/WidthSlider";
 
 const DEFAULT_MESSAGE = "Search our collection of more than 400,000 artworks.";
 
 export default {
   name: "Search",
   components: {
+    WidthSlider,
     GalleryItem
   },
   data() {
     return {
+      test: 25,
       query: "",
       searchMessage: DEFAULT_MESSAGE,
       artworks: []

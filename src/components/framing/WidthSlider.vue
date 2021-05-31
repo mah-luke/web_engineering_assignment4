@@ -8,10 +8,10 @@
           type="number"
           step="0.1"
           :aria-label="legend"
-          :max="max * scale"
-          :min="min * scale"
-          :value="valueUpdate * scale"
-          @input="valueUpdate = Number.parseFloat($event.target.value) / scale"
+          :max="max / scale"
+          :min="min / scale"
+          :value="valueUpdate / scale"
+          @change="valueUpdate = Number.parseFloat($event.target.value) * 10"
         />
         cm
       </div>
@@ -20,10 +20,10 @@
       type="range"
       step="0.1"
       aria-hidden="true"
-      :value="valueUpdate * scale"
-      @input="valueUpdate = Number.parseFloat($event.target.value) / scale"
-      :max="max * scale"
-      :min="min * scale"
+      :value="valueUpdate / scale"
+      @input="valueUpdate = Number.parseFloat($event.target.value) * scale"
+      :max="max / scale"
+      :min="min / scale"
     />
   </fieldset>
 </template>
@@ -32,7 +32,6 @@
 export default {
   name: "WidthSlider",
   props: {
-    // TODO: add the rest of the props
     label: String,
     value: Number,
     max: Number,
@@ -40,7 +39,7 @@ export default {
   },
   data: function() {
     return {
-      scale: 0.1
+      scale: 10
     }
   },
   computed: {
@@ -52,7 +51,9 @@ export default {
         return this.value;
       },
       set: function(newValue) {
-        this.$emit('input', Math.round(newValue));
+        const clamp = (x, min, max) => Math.trunc(Math.min(Math.max(x, min), max));
+        let val = clamp(newValue, this.min, this.max);
+        this.$emit('input', val);
       }
     }
   }
