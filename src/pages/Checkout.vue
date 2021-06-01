@@ -1,4 +1,5 @@
 <template>
+
   <main v-if="status == 'ready'">
     <!-- ERROR
     <div class="error-message">An error occurred during payment. Please try again.</div>
@@ -41,8 +42,11 @@
           />
 
           <label for="country">Country</label>
-          <select name="country" id="country">
+          <select name="country" id="country" v-model="selDest">
             <!-- TODO: render bind destination options here -->
+            <option v-for="dest in destinations" v-bind:value="dest" v-bind:key="dest.country">
+              {{ dest.displayName }}
+            </option>
           </select>
 
           <label for="postalcode">Postal code</label>
@@ -94,18 +98,18 @@
       <div>
         <div>
           Subtotal: €
-          <span id="price-subtotal">0</span>
+          <span id="price-subtotal">{{ cartTotal > selDest.cost? displayMoney(cartTotal-selDest.cost): 0 }}</span>
         </div>
         <div>
           Shipping Costs: €
-          <span id="price-shipping">0</span>
+          <span id="price-shipping">{{ displayMoney(selDest.cost) }}</span>
         </div>
       </div>
 
       <div>
         <div class="checkout-total">
           Total: €
-          <span id="price-total">0</span>
+          <span id="price-total">{{  displayMoney(cartTotal) }}</span>
         </div>
       </div>
 
@@ -130,9 +134,57 @@
   -->
 </template>
 
+
 <script>
+
 export default {
-  name: "Checkout"
+  name: "Checkout",
+
+  data: function() {
+    return {
+      card: {
+        cvc: 'asdf',
+        cardnumber: 'sadf',
+        cardholder: 'max muster',
+      },
+      customer: {
+        shipping_address: {
+          postal_code: 'at03',
+          phone: '1234'
+        }
+      },
+      status: 'ready',
+      destinations: this.$store.getters.sortedDestinations,
+      selDest: {
+        country: String,
+        cost: Number,
+        displayName: String
+      },
+      cartTotal: this.$store.getters.cartTotal,
+      cardexpiry: '03/2003'
+    }
+  },
+
+  computed: {
+
+  },
+
+  mounted() {
+    let newCart = this.$store.dispatch('loadCart');
+
+    if (newCart == null) {
+      this.$router.push({ path: "/cart" })
+          .catch(e => console.log(e));
+    }
+
+    this.selDest = this.destinations[0];
+  },
+
+  methods: {
+    displayMoney: function(value) {
+      return (value/100).toFixed(2);
+    }
+  }
 };
 </script>
 
