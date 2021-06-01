@@ -11,10 +11,12 @@
 </template>
 
 <script>
+import CartItem from "@/components/CartItem";
 export default {
   name: "Cart",
-  components: {
-  }
+  // components: {
+  //   CartItem
+  // }
 };
 </script>
 

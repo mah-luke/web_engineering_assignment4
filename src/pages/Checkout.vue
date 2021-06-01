@@ -1,10 +1,27 @@
 <template>
-  <main v-if="status == 'ready'">
+
+  <main>
     <!-- ERROR
-    <div class="error-message">An error occurred during payment. Please try again.</div>
+
     -->
 
-    <form class="checkout-form" id="checkout-form">
+    <div v-if="status == 'processing'">
+      <h2>Processing payment...</h2>
+      <img src="@/assets/images/spinner.gif" width="50" height="50" />
+    </div>
+
+    <div v-if="status == 'success'">
+      <div>Your payment was completed successfully.</div>
+      <h2>Thank you for your purchase!</h2>
+      <div>
+        <router-link to="/search">&larr; Back to Search</router-link>
+      </div>
+    </div>
+
+    <div v-if="status == 'ready'">
+      <div class="error-message" v-if="error == true">An error occurred during payment. Please try again.</div>
+
+      <form class="checkout-form" id="checkout-form">
       <fieldset>
         <legend>Contact information</legend>
         <div class="grid">
@@ -41,8 +58,11 @@
           />
 
           <label for="country">Country</label>
-          <select name="country" id="country">
+          <select name="country" id="country" v-model="selDest">
             <!-- TODO: render bind destination options here -->
+            <option v-for="dest in destinations" v-bind:value="dest" v-bind:key="dest.country">
+              {{ dest.displayName }}
+            </option>
           </select>
 
           <label for="postalcode">Postal code</label>
@@ -94,18 +114,18 @@
       <div>
         <div>
           Subtotal: €
-          <span id="price-subtotal">0</span>
+          <span id="price-subtotal">{{ this.cartTotal > this.selDest.cost? displayMoney(this.cartTotal-this.selDest.cost): displayMoney(0) }}</span>
         </div>
         <div>
           Shipping Costs: €
-          <span id="price-shipping">0</span>
+          <span id="price-shipping">{{ displayMoney(this.selDest.cost) }}</span>
         </div>
       </div>
 
       <div>
         <div class="checkout-total">
           Total: €
-          <span id="price-total">0</span>
+          <span id="price-total">{{displayMoney(this.cartTotal)}}</span>
         </div>
       </div>
 
@@ -114,25 +134,62 @@
         <button type="submit" id="pay-button">Pay</button>
       </div>
     </form>
-  </main>
-
-  <!-- PROCESSING
-    <h2>Processing payment...</h2>
-    <img src="@/assets/images/spinner.gif" width="50" height="50" />
-  -->
-
-  <!-- SUCCESS
-    <div>Your payment was completed successfully.</div>
-    <h2>Thank you for your purchase!</h2>
-    <div>
-      <router-link to="/search">&larr; Back to Search</router-link>
     </div>
-  -->
+  </main>
 </template>
 
+
 <script>
+
 export default {
-  name: "Checkout"
+  name: "Checkout",
+
+  data: function() {
+    return {
+      card: {
+        cvc: 'asdf',
+        cardnumber: 'sadf',
+        cardholder: 'max muster',
+      },
+      customer: {
+        shipping_address: {
+          postal_code: 'at03',
+          phone: '1234'
+        }
+      },
+      status: 'ready',
+      error: false,
+      destinations: this.$store.getters.sortedDestinations,
+      selDest: {
+        country: String,
+        cost: Number,
+        displayName: String
+      },
+      cartTotal: this.$store.getters.cartTotal,
+      cardexpiry: '03/2003'
+    }
+  },
+
+  computed: {
+
+  },
+
+  mounted() {
+    let newCart = this.$store.dispatch('loadCart');
+
+    if (newCart == null) {
+      this.$router.push({ path: "/cart" })
+          .catch(e => console.log(e));
+    }
+
+    this.selDest = this.destinations[0];
+  },
+
+  methods: {
+    displayMoney: function(value) {
+      return (value/100).toFixed(2);
+    }
+  }
 };
 </script>
 
