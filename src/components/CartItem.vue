@@ -2,7 +2,8 @@
   <div class="cart-item" v-if="artwork">
 
       <div class="cart-preview">
-        <framed-artwork /> <!-- TODO: establish proper bindings -->
+        <framed-artwork v-bind:artwork="this.artwork" v-bind:config="this.config"/>
+        <p>Textttt</p> <!-- TODO: establish proper bindings -->
       </div>
 
     <!-- TODO: complete this and slot it into a museum label
@@ -15,6 +16,8 @@
 
 <script>
 import FramedArtwork from "@/components/FramedArtwork";
+import MuseumLabel from "@/components/MuseumLabel";
+import ArtmartService from "@/services/ArtmartService.js";
 
 export default {
   name: "CartItem",
@@ -37,6 +40,11 @@ export default {
       artwork: null
     };
   },
+  mounted() {
+    ArtmartService.getArtwork(this.artworkId).then(response =>{
+      this.artwork = response;
+    });
+  },
   computed: {
     framingRoute() {
       return {
@@ -49,6 +57,13 @@ export default {
           matColor: this.cartItem.matColor
         }
       };
+    },
+    config() {
+      return {
+        printSize: this.cartItem.printSize,
+        matColor: this.cartItem.matColor,
+        frameStyle: this.cartItem.frameStyle
+      }
     }
   }
 };

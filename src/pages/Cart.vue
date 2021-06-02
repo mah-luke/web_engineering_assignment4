@@ -1,6 +1,7 @@
 <template>
   <main>
     <section class="cart">
+      <cart-item/>
       <!-- TODO: render and bind cart items here -->
       <div class="cart-total">
         <div class="price">Total: € 0</div>
@@ -14,9 +15,9 @@
 import CartItem from "@/components/CartItem";
 export default {
   name: "Cart",
-  // components: {
+   components: {
   //   CartItem
-  // }
+  }
 };
 </script>
 
