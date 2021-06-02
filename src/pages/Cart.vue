@@ -1,6 +1,7 @@
 <template>
   <main>
     <section class="cart">
+      <cart-item/>
       <!-- TODO: render and bind cart items here -->
       <div class="cart-total">
         <div class="price">Total: € 0</div>
@@ -11,9 +12,10 @@
 </template>
 
 <script>
+import CartItem from '../components/CartItem.vue';
 export default {
   name: "Cart",
-  components: {
+  components: { 
   }
 };
 </script>
