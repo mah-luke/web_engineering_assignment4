@@ -1,10 +1,5 @@
 <template>
-
   <main>
-    <!-- ERROR
-
-    -->
-
     <div v-if="status == 'processing'">
       <h2>Processing payment...</h2>
       <img src="@/assets/images/spinner.gif" width="50" height="50" />
@@ -26,7 +21,7 @@
         <legend>Contact information</legend>
         <div class="grid">
           <label for="email">Email</label>
-          <input type="email" name="email" id="email" v-model="email" required />
+          <input type="email" name="email" id="email" v-model="options.email" required />
         </div>
       </fieldset>
 
@@ -38,7 +33,7 @@
             type="text"
             name="name"
             id="name"
-            v-model="name"
+            v-model="options.name"
             required
           />
 
@@ -47,7 +42,7 @@
             type="text"
             name="address"
             id="address"
-            v-model="address"
+            v-model="options.address"
             required
           />
 
@@ -56,12 +51,12 @@
             type="text"
             name="city"
             id="city"
-            v-model="city"
+            v-model="options.city"
             required
           />
 
           <label for="country">Country</label>
-          <select name="country" id="country" v-model="selDest">
+          <select name="country" id="country" v-model="options.selDest">
             <!-- TODO: render bind destination options here -->
             <option v-for="dest in destinations" v-bind:value="dest" v-bind:key="dest.country">
               {{ dest.displayName }}
@@ -96,7 +91,7 @@
             type="text"
             name="cardexpiry"
             id="cardexpiry"
-            v-model="cardexpiry"
+            v-model="options.cardexpiry"
             pattern="\d{2}/\d{4}"
             placeholder="MM/YYYY"
             required
@@ -117,18 +112,18 @@
       <div>
         <div>
           Subtotal: €
-          <span id="price-subtotal">{{ this.cartTotal > this.selDest.cost? displayMoney(this.cartTotal-this.selDest.cost): displayMoney(0) }}</span>
+          <span id="price-subtotal">{{ displayMoney(this.cartTotal) }}</span>
         </div>
         <div>
           Shipping Costs: €
-          <span id="price-shipping">{{ displayMoney(this.selDest.cost) }}</span>
+          <span id="price-shipping">{{ displayMoney(this.options.selDest.cost) }}</span>
         </div>
       </div>
 
       <div>
         <div class="checkout-total">
           Total: €
-          <span id="price-total">{{displayMoney(this.cartTotal)}}</span>
+          <span id="price-total">{{displayMoney(this.cartTotal + this.options.selDest.cost)}}</span>
         </div>
       </div>
 
@@ -168,19 +163,23 @@ export default {
           cost: Number,
           displayName: String
         },
-        cardexpiry: '03/2003'
+        cardexpiry: '03/2003',
+        city: 'hochausen',
+        address: 'hauptstr 1'
 
       },
       status: 'ready',
-      error: false,
-
-      destinations: this.$store.getters.sortedDestinations,
-      cartTotal: this.$store.getters.cartTotal,
+      error: false
     }
   },
 
   computed: {
-
+    destinations() {
+      return this.$store.getters.sortedDestinations;
+    },
+    cartTotal() {
+      return this.$store.getters.cartTotal;
+    }
   },
 
   mounted() {
@@ -191,7 +190,7 @@ export default {
           .catch(e => console.log(e));
     }
 
-    this.selDest = this.destinations[0];
+    this.options.selDest = this.destinations[0];
   },
 
   methods: {
