@@ -57,9 +57,8 @@
 
           <label for="country">Country</label>
           <select name="country" id="country" v-model="options.selDest">
-            <!-- TODO: render bind destination options here -->
             <option v-for="dest in destinations" v-bind:value="dest" v-bind:key="dest.country">
-              {{ dest.displayName }}
+              {{dest.displayName}}
             </option>
           </select>
 
@@ -123,7 +122,7 @@
       <div>
         <div class="checkout-total">
           Total: €
-          <span id="price-total">{{displayMoney(this.cartTotal + this.options.selDest.cost)}}</span>
+          <span id="price-total">{{ displayMoney(this.cartTotal + this.options.selDest.cost) }}</span>
         </div>
       </div>
 
