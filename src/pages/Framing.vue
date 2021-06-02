@@ -62,7 +62,7 @@ export default {
         frameStyle: this.$store.getters.sortedFrames[0].style,
         matWidth: 55,
         matColor: this.$store.getters.sortedMats[0].color,
-      },
+      }
     };
   },
   computed: {
