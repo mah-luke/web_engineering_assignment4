@@ -26,7 +26,7 @@
         <legend>Contact information</legend>
         <div class="grid">
           <label for="email">Email</label>
-          <input type="email" name="email" id="email" required />
+          <input type="email" name="email" id="email" v-model="email" required />
         </div>
       </fieldset>
 
@@ -38,6 +38,7 @@
             type="text"
             name="name"
             id="name"
+            v-model="name"
             required
           />
 
@@ -46,6 +47,7 @@
             type="text"
             name="address"
             id="address"
+            v-model="address"
             required
           />
 
@@ -54,6 +56,7 @@
             type="text"
             name="city"
             id="city"
+            v-model="city"
             required
           />
 
@@ -157,16 +160,22 @@ export default {
           phone: '1234'
         }
       },
+      options: {
+        name: 'tstName',
+        email: 'tst@gmail.com',
+        selDest: {
+          country: String,
+          cost: Number,
+          displayName: String
+        },
+        cardexpiry: '03/2003'
+
+      },
       status: 'ready',
       error: false,
+
       destinations: this.$store.getters.sortedDestinations,
-      selDest: {
-        country: String,
-        cost: Number,
-        displayName: String
-      },
       cartTotal: this.$store.getters.cartTotal,
-      cardexpiry: '03/2003'
     }
   },
 
