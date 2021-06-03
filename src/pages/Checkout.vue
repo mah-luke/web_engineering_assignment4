@@ -16,12 +16,12 @@
     <div v-if="status == 'ready'">
       <div class="error-message" v-if="error == true">An error occurred during payment. Please try again.</div>
 
-      <form class="checkout-form" id="checkout-form">
+      <form class="checkout-form" id="checkout-form" @submit.prevent="submit">
       <fieldset>
         <legend>Contact information</legend>
         <div class="grid">
           <label for="email">Email</label>
-          <input type="email" name="email" id="email" v-model="optionsX.email" required />
+          <input type="email" name="email" id="email" v-model="customer.email" required />
         </div>
       </fieldset>
 
@@ -33,7 +33,7 @@
             type="text"
             name="name"
             id="name"
-            v-model="optionsX.name"
+            v-model="customer.shipping_address.name"
             required
           />
 
@@ -42,7 +42,7 @@
             type="text"
             name="address"
             id="address"
-            v-model="optionsX.address"
+            v-model="customer.shipping_address.address"
             required
           />
 
@@ -51,12 +51,12 @@
             type="text"
             name="city"
             id="city"
-            v-model="optionsX.city"
+            v-model="customer.shipping_address.city"
             required
           />
 
           <label for="country">Country</label>
-          <select name="country" id="country" v-model="optionsX.selCountry">
+          <select name="country" id="country" v-model="customer.shipping_address.country">
             <option v-for="dest in destinations" :value="dest.country" v-bind:key="dest.country">
               {{dest.displayName}}
             </option>
@@ -90,7 +90,7 @@
             type="text"
             name="cardexpiry"
             id="cardexpiry"
-            v-model="optionsX.cardexpiry"
+            v-model="card.cardexpiry"
             pattern="\d{2}/\d{4}"
             placeholder="MM/YYYY"
             required
@@ -138,29 +138,30 @@
 
 <script>
 
+import * as ArtmartService from "@/services/ArtmartService";
+
 export default {
   name: "Checkout",
+
 
   data: function() {
     return {
       card: {
-        cvc: 'asdf',
-        cardnumber: 'sadf',
-        cardholder: 'max muster',
+        cvc: null,
+        cardnumber: null,
+        cardholder: null,
+        cardexpiry: null,
       },
       customer: {
+        email: null,
         shipping_address: {
-          postal_code: 'at03',
-          phone: '1234'
+          postal_code: null,
+          phone: null,
+          city: null,
+          address: null,
+          name: null,
+          country: null,
         }
-      },
-      optionsX: {
-        name: 'tstName',
-        email: 'tst@gmail.com',
-        selCountry: String,
-        cardexpiry: '03/2003',
-        city: 'hochausen',
-        address: 'hauptstr 1'
       },
       status: 'ready',
       error: false
@@ -179,7 +180,7 @@ export default {
       return this.$store.getters.cartTotal;
     },
     selDest() {
-      return this.destinations.find(val => val.country == this.optionsX.selCountry);
+      return this.destinations.find(val => val.country == this.customer.shipping_address.country);
     }
   },
 
@@ -195,7 +196,7 @@ export default {
   },
 
   created() {
-    this.optionsX.selCountry = this.destinations[0].country;
+    this.customer.shipping_address.country = this.destinations[0].country;
   },
 
   methods: {
@@ -204,7 +205,12 @@ export default {
       //   throw new Error(JSON.stringify(value) + " ");
       // }
       return (value/100).toFixed(2);
+    },
+    submit() {
+      console.log("checking out");
+      ArtmartService.checkout(this.customer);
     }
+
   }
 };
 </script>
