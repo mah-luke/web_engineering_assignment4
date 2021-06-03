@@ -21,7 +21,7 @@
         <legend>Contact information</legend>
         <div class="grid">
           <label for="email">Email</label>
-          <input type="email" name="email" id="email" v-model="options.email" required />
+          <input type="email" name="email" id="email" v-model="optionsX.email" required />
         </div>
       </fieldset>
 
@@ -33,7 +33,7 @@
             type="text"
             name="name"
             id="name"
-            v-model="options.name"
+            v-model="optionsX.name"
             required
           />
 
@@ -42,7 +42,7 @@
             type="text"
             name="address"
             id="address"
-            v-model="options.address"
+            v-model="optionsX.address"
             required
           />
 
@@ -51,13 +51,13 @@
             type="text"
             name="city"
             id="city"
-            v-model="options.city"
+            v-model="optionsX.city"
             required
           />
 
           <label for="country">Country</label>
-          <select name="country" id="country" v-model="options.selDest">
-            <option v-for="dest in destinations" v-bind:value="dest" v-bind:key="dest.country">
+          <select name="country" id="country" v-model="optionsX.selCountry">
+            <option v-for="dest in destinations" :value="dest.country" v-bind:key="dest.country">
               {{dest.displayName}}
             </option>
           </select>
@@ -90,7 +90,7 @@
             type="text"
             name="cardexpiry"
             id="cardexpiry"
-            v-model="options.cardexpiry"
+            v-model="optionsX.cardexpiry"
             pattern="\d{2}/\d{4}"
             placeholder="MM/YYYY"
             required
@@ -115,14 +115,14 @@
         </div>
         <div>
           Shipping Costs: €
-          <span id="price-shipping">{{ displayMoney(this.options.selDest.cost) }}</span>
+          <span id="price-shipping">{{ displayMoney(selDest.cost)}}</span>
         </div>
       </div>
 
       <div>
         <div class="checkout-total">
           Total: €
-          <span id="price-total">{{ displayMoney(this.cartTotal + this.options.selDest.cost) }}</span>
+          <span id="price-total">{{ displayMoney(cartTotal + selDest.cost) }}</span>
         </div>
       </div>
 
@@ -154,18 +154,13 @@ export default {
           phone: '1234'
         }
       },
-      options: {
+      optionsX: {
         name: 'tstName',
         email: 'tst@gmail.com',
-        selDest: {
-          country: String,
-          cost: Number,
-          displayName: String
-        },
+        selCountry: String,
         cardexpiry: '03/2003',
         city: 'hochausen',
         address: 'hauptstr 1'
-
       },
       status: 'ready',
       error: false
@@ -174,26 +169,40 @@ export default {
 
   computed: {
     destinations() {
-      return this.$store.getters.sortedDestinations;
+      let dest = this.$store.getters.sortedDestinations;
+      // let msg = "";
+      // dest.forEach(val => msg += ", " + val.cost);
+
+      return dest;
     },
     cartTotal() {
       return this.$store.getters.cartTotal;
+    },
+    selDest() {
+      return this.destinations.find(val => val.country == this.optionsX.selCountry);
     }
   },
 
   mounted() {
-    let newCart = this.$store.dispatch('loadCart');
+    // let newCart = this.$store.dispatch('loadCart');
 
-    if (newCart == null) {
-      this.$router.push({ path: "/cart" })
-          .catch(e => console.log(e));
+    if (this.$store.getters.cartIsEmpty) {
+      console.log(JSON.stringify(this.$store.dispatch('loadCart')));
+      console.log(this.$store.state.cart.length);
+      this.$router.push({ path: "/cart" });
+          // .catch(e => console.log(e));
     }
+  },
 
-    this.options.selDest = this.destinations[0];
+  created() {
+    this.optionsX.selCountry = this.destinations[0].country;
   },
 
   methods: {
     displayMoney: function(value) {
+      // if (value !== this.cartTotal) {
+      //   throw new Error(JSON.stringify(value) + " ");
+      // }
       return (value/100).toFixed(2);
     }
   }
