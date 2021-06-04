@@ -139,6 +139,7 @@
 <script>
 
 import * as ArtmartService from "@/services/ArtmartService";
+import * as BlingService from "../services/BlingService";
 
 export default {
   name: "Checkout",
@@ -206,9 +207,24 @@ export default {
       // }
       return (value/100).toFixed(2);
     },
-    submit() {
+    async submit() {
       console.log("checking out");
-      ArtmartService.checkout(this.customer);
+      this.status = 'processing';
+
+      let res = await ArtmartService.checkout(this.customer);
+      if (res == null) {
+        this.status = 'ready';
+        this.error= true;
+        return;
+      }
+
+      let resBling = await BlingService.confirmPaymentIntent(res.payment_intent_id, res.client_secret, this.card );
+      if (resBling == null) {
+        this.status = 'ready';
+        this.error = true;
+        return;
+      }
+      this.status = 'success';
     }
 
   }

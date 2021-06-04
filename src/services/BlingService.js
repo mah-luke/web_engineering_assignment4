@@ -10,5 +10,27 @@ const BLING_BASE_URL = 'https://web-engineering.big.tuwien.ac.at/s21/bling'
  */
 export async function confirmPaymentIntent(paymentIntentId, clientSecret, card) {
     // TODO
-    return false;
+    let body = {
+        client_secret: clientSecret,
+        cardholder: card.cardholder,
+        cardnumber: card.cardnumber,
+        exp_month: Number.parseInt(card.cardexpiry.split('/')[0]),
+        exp_year: Number.parseInt(card.cardexpiry.split('/')[1]),
+        cvc: card.cvc
+    }
+
+
+    const res = await fetch( BLING_BASE_URL + `/payment_intents/${paymentIntentId}/confirm`, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify(body)
+    });
+    if (!res.ok) {
+        return null;
+    }
+    return res.json();
 }
